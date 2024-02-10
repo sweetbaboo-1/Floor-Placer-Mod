@@ -1,0 +1,39 @@
+{
+	"schemaVersion": 1,
+	"id": "floorplacermod",
+	"version": "${version}",
+	"name": "Floor Placer Mod",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"SweetBaboo_"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.sweetbaboo.floorplacermod.FloorPlacerMod"
+		],
+		"client": [
+			"net.sweetbaboo.floorplacermod.FloorPlacerModClient"
+		],
+		"fabric-datagen": [
+			"net.sweetbaboo.floorplacermod.FloorPlacerModDataGenerator"
+		]
+	},
+	"mixins": [
+		"floorplacermod.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.6",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
