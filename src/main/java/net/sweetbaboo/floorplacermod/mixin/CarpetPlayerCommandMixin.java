@@ -18,6 +18,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.sweetbaboo.floorplacermod.BlockGenerator;
+import net.sweetbaboo.floorplacermod.BlockSelector;
 import net.sweetbaboo.floorplacermod.LitematicaLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -47,11 +48,12 @@ public abstract class CarpetPlayerCommandMixin {
                                     .executes(context -> {
                                       var player=getPlayer(context);
                                       String fileName=StringArgumentType.getString(context, "filename");
-                                      int rows=IntegerArgumentType.getInteger(context, "rows");
-                                      int columns=IntegerArgumentType.getInteger(context, "columns");
+                                      int rows = IntegerArgumentType.getInteger(context, "rows");
+                                      int columns = IntegerArgumentType.getInteger(context, "columns");
                                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
                                       context.getSource().sendFeedback(() -> Text.of("Started " + player.getDisplayName().getString() + " building floor."), false);
                                       BlockGenerator.getInstance(LitematicaLoader.loadLitematicaFile(fileName), rows, columns);
+                                      BlockSelector.selectNextBlock(player);
                                       return 1;
                                     })
                             )
@@ -68,8 +70,6 @@ public abstract class CarpetPlayerCommandMixin {
     );
   }
 
-  //  int rows = IntegerArgumentType.getInteger(context, "rows");
-//  int columns = IntegerArgumentType.getInteger(context, "columns");
   private static CompletableFuture<Suggestions> suggestStrings(SuggestionsBuilder builder) {
     generateSuggestionList(); // Ensure fileNames list is populated
     String remaining=builder.getRemaining().toLowerCase(); // Get the remaining text typed by the user
@@ -79,7 +79,6 @@ public abstract class CarpetPlayerCommandMixin {
             .forEach(builder::suggest);
     return builder.buildFuture(); // Build and return the suggestions
   }
-
 
   private static void generateSuggestionList() {
     fileNames=new ArrayList<>();

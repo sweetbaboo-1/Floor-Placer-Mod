@@ -69,13 +69,6 @@ public class BlockGenerator {
   }
 
   public void reset() {
-    this.tile = null;
-    this.rowsToBuild = 0;
-    this.columnsToBuild = 0;
-
-    this.floorColumn = 0;
-    this.tileColumn = 0;
-    this.floorRow = 0;
-    this.tileRow = 0;
+    instance = null;
   }
 }

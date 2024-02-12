@@ -1,7 +1,6 @@
 package net.sweetbaboo.floorplacermod;
 
 
-import java.io.File;
 import java.io.IOException;
 
 import org.slf4j.Logger;
@@ -16,9 +15,8 @@ public class LitematicaLoader {
   public static final Logger logger = LoggerFactory.getLogger(MOD_ID);
 
   public static Schematic loadLitematicaFile(String filename) {
-    final String filePath = "resources\\schematics\\" + filename;
+    final String filePath = "resources\\schematics\\" + filename; // path to where syncmatica stores its schematics?
     Schematic schematic;
-    System.out.println(System.getProperty("user.dir"));
     try {
       schematic = SchematicLoader.load(filePath);
       logger.info("Successfully loaded " + schematic.name());

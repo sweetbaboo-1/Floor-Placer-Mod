@@ -23,8 +23,10 @@ Additionally, this mod introduces functionality to control the automation proces
 4. Control the automation process using "/player <name> use interval <interval>" to set an interval between each block placement, and "/player <name> stop" to pause the process.
 
 ## Known Issues
-1. The first use command sent to the player may occasionally place the incorrect block.
-2. The highest row of the floor may not be built properly in some cases.
+None
+
+## TODO
+Schematics currently need to be uploaded manually by someone with access to the server files. Ideally Syncmatica could be used.
 
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
