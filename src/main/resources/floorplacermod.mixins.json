@@ -3,7 +3,9 @@
 	"package": "net.sweetbaboo.floorplacermod.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"ExampleMixin"
+		"CarpetEntityPlayerActionPackMixin",
+		"CarpetPlayerCommandMixin",
+		"ServerPlayerEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -41,3 +41,4 @@ replay_*.log
 
 # Project exclude paths
 /output/output.txt
+/output/
