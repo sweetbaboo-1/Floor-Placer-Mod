@@ -46,27 +46,49 @@ public abstract class CarpetPlayerCommandMixin {
                     .then(CommandManager.argument("rows", IntegerArgumentType.integer())
                             .then(CommandManager.argument("columns", IntegerArgumentType.integer())
                                     .executes(context -> {
-                                      var player=getPlayer(context);
-                                      String fileName=StringArgumentType.getString(context, "filename");
+                                      var player = getPlayer(context);
+                                      String fileName = StringArgumentType.getString(context, "filename");
                                       int rows = IntegerArgumentType.getInteger(context, "rows");
                                       int columns = IntegerArgumentType.getInteger(context, "columns");
                                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
                                       context.getSource().sendFeedback(() -> Text.of("Started " + player.getDisplayName().getString() + " building floor."), false);
-                                      BlockGenerator.getInstance(LitematicaLoader.loadLitematicaFile(fileName), rows, columns);
+                                      BlockGenerator.getInstance(fileName, rows, columns);
                                       BlockSelector.selectNextBlock(player);
                                       return 1;
                                     })
                             )
                     )
             )
+            .then(((LiteralArgumentBuilder<ServerCommandSource>) (Object) literal("saveState"))
+                    .executes(context -> {
+                      var player = getPlayer(context);
+                      ((ServerPlayerEntityAccess) player).setBuildFloor(false);
+                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
+                      String message = blockGenerator.saveState() ? "Successfully saved " : "Failed to save ";
+                      context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getTileName()), false);
+                      return 1;
+                    })
+            )
+            .then(((LiteralArgumentBuilder<ServerCommandSource>) (Object) literal("loadState"))
+                    .executes(context -> {
+                      var player = getPlayer(context);
+                      ((ServerPlayerEntityAccess) player).setBuildFloor(true);
+                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
+                      BlockSelector.selectNextBlock(player);
+                      String message = blockGenerator.loadState() ? "Successfully loaded " : "Failed to load ";
+                      context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getTileName()), false);
+                      return 1;
+                    })
+            )
             .then(((LiteralArgumentBuilder<ServerCommandSource>) (Object) literal("stop"))
                     .executes(context -> {
-                      var player=getPlayer(context);
+                      var player = getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(false);
                       BlockGenerator.getInstance().reset();
                       context.getSource().sendFeedback(() -> Text.of("Stopped " + player.getDisplayName().getString() + " building floor"), false);
                       return 1;
-                    }))
+                    })
+            )
     );
   }
 

@@ -26,7 +26,8 @@ Additionally, this mod introduces functionality to control the automation proces
 None
 
 ## TODO
-Schematics currently need to be uploaded manually by someone with access to the server files. Ideally Syncmatica could be used.
+1. Schematics currently need to be uploaded manually by someone with access to the server files. Ideally Syncmatica could be used.
+2. Make it so that the bot can use all 36 inventory slots.
 
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
