@@ -7,13 +7,13 @@ import net.sandrohc.schematic4j.schematic.Schematic;
 import java.io.IOException;
 
 public class LitematicaLoader {
-  private static final String SYNCMATICA_FOLDER = "syncmatics\\";
+  private static final String SYNCMATICA_FOLDER="syncmatics\\";
 
   public static Schematic loadLitematicaFile(String filename) {
-    final String filePath = SYNCMATICA_FOLDER + filename;
+    final String filePath=SYNCMATICA_FOLDER + filename;
     Schematic schematic;
     try {
-      schematic = SchematicLoader.load(filePath);
+      schematic=SchematicLoader.load(filePath);
       return schematic;
     } catch (ParsingException | IOException e) {
       e.printStackTrace();

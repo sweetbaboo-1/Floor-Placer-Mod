@@ -48,8 +48,8 @@ public abstract class CarpetPlayerCommandMixin {
                             .then(CommandManager.argument("columns", IntegerArgumentType.integer())
                                     .executes(context -> {
                                       var player=getPlayer(context);
-                                      String schematicName = StringArgumentType.getString(context, "schematic");
-                                      String fileName = getFileNameFromSchematicName(schematicName);
+                                      String schematicName=StringArgumentType.getString(context, "schematic");
+                                      String fileName=getFileNameFromSchematicName(schematicName);
                                       int rows=IntegerArgumentType.getInteger(context, "rows");
                                       int columns=IntegerArgumentType.getInteger(context, "columns");
                                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
@@ -111,15 +111,15 @@ public abstract class CarpetPlayerCommandMixin {
     fileNames=new ArrayList<>();
     schematicNames=new ArrayList<>();
 
-    Gson gson = new Gson();
-    try (BufferedReader reader = new BufferedReader(new FileReader(SYNCMATICA_PLACEMENT_JSON_FILEPATH))) {
-      JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-      JsonArray placements = jsonObject.getAsJsonArray("placements");
+    Gson gson=new Gson();
+    try (BufferedReader reader=new BufferedReader(new FileReader(SYNCMATICA_PLACEMENT_JSON_FILEPATH))) {
+      JsonObject jsonObject=gson.fromJson(reader, JsonObject.class);
+      JsonArray placements=jsonObject.getAsJsonArray("placements");
 
       for (JsonElement element : placements) {
-        JsonObject placement = element.getAsJsonObject();
-        String hash = placement.get("hash").getAsString();
-        String fileName = placement.get("file_name").getAsString();
+        JsonObject placement=element.getAsJsonObject();
+        String hash=placement.get("hash").getAsString();
+        String fileName=placement.get("file_name").getAsString();
 
         fileNames.add(hash + ".litematic");
         schematicNames.add(fileName.replaceAll("[^a-zA-Z]", ""));

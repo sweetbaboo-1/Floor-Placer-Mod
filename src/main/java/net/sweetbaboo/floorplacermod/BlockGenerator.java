@@ -10,8 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class BlockGenerator {
-  private static final String STATE_FILE_PATH= "resources\\floorplacerState\\blockGeneratorState.json";
-//  private static final String SYNCMATICS_PATH= "syncmatics\\";
+  private static final String STATE_FILE_PATH="resources\\floorplacerState\\blockGeneratorState.json";
 
   private static BlockGenerator instance;
 
@@ -33,25 +32,25 @@ public class BlockGenerator {
   private int tileRow;
 
   private BlockGenerator(String filename, int rowsToBuild, int columnsToBuild) {
-    this.filename = filename;
-    this.tile = LitematicaLoader.loadLitematicaFile(filename);
-    this.rowsToBuild = rowsToBuild;
-    this.columnsToBuild = columnsToBuild;
+    this.filename=filename;
+    this.tile=LitematicaLoader.loadLitematicaFile(filename);
+    this.rowsToBuild=rowsToBuild;
+    this.columnsToBuild=columnsToBuild;
   }
 
   public static BlockGenerator getInstance(String filename, int rowsToBuild, int columnsToBuild) {
     if (instance == null) {
-      instance = new BlockGenerator(filename, rowsToBuild, columnsToBuild);
+      instance=new BlockGenerator(filename, rowsToBuild, columnsToBuild);
     }
     return instance;
   }
 
   public boolean saveState() {
-    GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
+    GsonBuilder gsonBuilder=new GsonBuilder().setPrettyPrinting();
     gsonBuilder.excludeFieldsWithoutExposeAnnotation(); // Only fields with @Expose will be serialized
-    Gson gson = gsonBuilder.create();
+    Gson gson=gsonBuilder.create();
 
-    try (FileWriter writer = new FileWriter(STATE_FILE_PATH)) {
+    try (FileWriter writer=new FileWriter(STATE_FILE_PATH)) {
       gson.toJson(this, writer);
       return true;
     } catch (IOException e) {
@@ -61,17 +60,17 @@ public class BlockGenerator {
   }
 
   public boolean loadState() {
-    Gson gson = new Gson();
-    try (FileReader reader = new FileReader(STATE_FILE_PATH)) {
-      BlockGenerator loadedState = gson.fromJson(reader, BlockGenerator.class);
-      this.filename = loadedState.filename;
-      this.rowsToBuild = loadedState.rowsToBuild;
-      this.columnsToBuild = loadedState.columnsToBuild;
-      this.floorColumn = loadedState.floorColumn;
-      this.tileColumn = loadedState.tileColumn;
-      this.floorRow = loadedState.floorRow;
-      this.tileRow = loadedState.tileRow;
-      this.tile = LitematicaLoader.loadLitematicaFile(filename);
+    Gson gson=new Gson();
+    try (FileReader reader=new FileReader(STATE_FILE_PATH)) {
+      BlockGenerator loadedState=gson.fromJson(reader, BlockGenerator.class);
+      this.filename=loadedState.filename;
+      this.rowsToBuild=loadedState.rowsToBuild;
+      this.columnsToBuild=loadedState.columnsToBuild;
+      this.floorColumn=loadedState.floorColumn;
+      this.tileColumn=loadedState.tileColumn;
+      this.floorRow=loadedState.floorRow;
+      this.tileRow=loadedState.tileRow;
+      this.tile=LitematicaLoader.loadLitematicaFile(filename);
       return true;
     } catch (IOException e) {
       e.printStackTrace();
@@ -85,7 +84,7 @@ public class BlockGenerator {
 
   public static BlockGenerator getInstance() {
     if (instance == null) {
-      instance = new BlockGenerator();
+      instance=new BlockGenerator();
       instance.loadState();
     }
     return instance;
@@ -97,17 +96,17 @@ public class BlockGenerator {
   public String getNextBlockName() {
     if (floorColumn < columnsToBuild && tileColumn < tile.width()
             && floorRow < rowsToBuild && tileRow < tile.length()) {
-      String nextBlock = tile.block(tileRow, 0, tileColumn).block;
+      String nextBlock=tile.block(tileRow, 0, tileColumn).block;
 
       tileRow++;
       if (tileRow >= tile.length()) {
-        tileRow = 0;
+        tileRow=0;
         floorRow++;
         if (floorRow >= rowsToBuild) {
-          floorRow = 0;
+          floorRow=0;
           tileColumn++;
           if (tileColumn >= tile.width()) {
-            tileColumn = 0;
+            tileColumn=0;
             floorColumn++;
           }
         }
@@ -130,15 +129,15 @@ public class BlockGenerator {
   }
 
   public void reset() {
-    tile = null;
-    filename = null;
-    rowsToBuild = 0;
-    columnsToBuild = 0;
-    floorColumn = 0;
-    tileColumn = 0;
-    floorRow = 0;
-    tileRow = 0;
-    instance = null;
+    tile=null;
+    filename=null;
+    rowsToBuild=0;
+    columnsToBuild=0;
+    floorColumn=0;
+    tileColumn=0;
+    floorRow=0;
+    tileRow=0;
+    instance=null;
   }
 
   // these getters are all needed.

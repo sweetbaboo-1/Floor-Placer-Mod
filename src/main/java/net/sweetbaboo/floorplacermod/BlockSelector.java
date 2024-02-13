@@ -10,12 +10,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class BlockSelector {
 
   public static void selectNextBlock(ServerPlayerEntity player) {
-    ServerPlayerEntityAccess playerAccess = (ServerPlayerEntityAccess) player;
-    EntityPlayerActionPack actionPack = ((ServerPlayerInterface) player).getActionPack();
+    ServerPlayerEntityAccess playerAccess=(ServerPlayerEntityAccess) player;
+    EntityPlayerActionPack actionPack=((ServerPlayerInterface) player).getActionPack();
 
-    BlockGenerator blockGenerator = BlockGenerator.getInstance();
+    BlockGenerator blockGenerator=BlockGenerator.getInstance();
     assert blockGenerator != null;
-    String nextBlockName = blockGenerator.getNextBlockName();
+    String nextBlockName=blockGenerator.getNextBlockName();
 
     if (nextBlockName == null) {
       playerAccess.setBuildFloor(false);
@@ -24,13 +24,13 @@ public class BlockSelector {
       return;
     }
 
-    Inventory inventory = player.getInventory();
-    int hotbarSlot = -1;
+    Inventory inventory=player.getInventory();
+    int hotbarSlot=-1;
 
-    for (int slot = 0; slot < 36; slot++) {
-      ItemStack itemStack = inventory.getStack(slot);
+    for (int slot=0; slot < 36; slot++) {
+      ItemStack itemStack=inventory.getStack(slot);
       if (itemStack.getItem().toString().toLowerCase().contains(nextBlockName.toLowerCase())) {
-        hotbarSlot = slot;
+        hotbarSlot=slot;
         break;
       }
     }

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin implements ServerPlayerEntityAccess {
   @Unique
-  private boolean isBuildingfloor = false;
+  private boolean isBuildingfloor=false;
 
   @Override
   public boolean isBuildingFloor() {
@@ -17,6 +17,6 @@ public class ServerPlayerEntityMixin implements ServerPlayerEntityAccess {
 
   @Override
   public void setBuildFloor(boolean shouldBuildFloor) {
-    this.isBuildingfloor = shouldBuildFloor;
+    this.isBuildingfloor=shouldBuildFloor;
   }
 }
