@@ -2,11 +2,7 @@ package net.sweetbaboo.floorplacermod.mixin;
 
 import access.ServerPlayerEntityAccess;
 import carpet.commands.PlayerCommand;
-import carpet.fakes.ServerPlayerInterface;
-import carpet.helpers.EntityPlayerActionPack;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -22,17 +18,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.sweetbaboo.floorplacermod.BlockGenerator;
 import net.sweetbaboo.floorplacermod.BlockSelector;
-import net.sweetbaboo.floorplacermod.LitematicaLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.concurrent.CompletableFuture;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -42,9 +35,8 @@ public abstract class CarpetPlayerCommandMixin {
 
   private static List<String> fileNames;
   private static List<String> schematicNames;
-  private static int selectedIndex;
 
-  private static final String SCHEMATIC_FOLDER="syncmatics\\";
+  private static final String SYNCMATICA_PLACEMENT_JSON_FILEPATH="config\\syncmatica\\placements.json";
 
   @SuppressWarnings("unchecked")
   @ModifyExpressionValue(method="register", at=@At(value="INVOKE", target="Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;then(Lcom/mojang/brigadier/builder/ArgumentBuilder;)Lcom/mojang/brigadier/builder/ArgumentBuilder;", ordinal=1), remap=false)
@@ -119,20 +111,24 @@ public abstract class CarpetPlayerCommandMixin {
     fileNames=new ArrayList<>();
     schematicNames=new ArrayList<>();
 
-    File directory=new File(SCHEMATIC_FOLDER);
-    File[] files=directory.listFiles();
+    Gson gson = new Gson();
+    try (BufferedReader reader = new BufferedReader(new FileReader(SYNCMATICA_PLACEMENT_JSON_FILEPATH))) {
+      JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
+      JsonArray placements = jsonObject.getAsJsonArray("placements");
 
-    if (files != null) {
-      for (File file : files) {
-        if (file.isFile()) {
-          String filename = file.getName();
-          String name = LitematicaLoader.loadLitematicaFile(filename).name();
-          schematicNames.add(name);
-          fileNames.add(filename);
-        }
+      for (JsonElement element : placements) {
+        JsonObject placement = element.getAsJsonObject();
+        String hash = placement.get("hash").getAsString();
+        String fileName = placement.get("file_name").getAsString();
+
+        fileNames.add(hash + ".litematic");
+        schematicNames.add(fileName.replaceAll("[^a-zA-Z]", ""));
       }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
+
 
   @Unique
   private static ServerPlayerEntity getPlayer(CommandContext<ServerCommandSource> context) {

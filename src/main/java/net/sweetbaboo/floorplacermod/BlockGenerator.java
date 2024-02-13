@@ -112,11 +112,21 @@ public class BlockGenerator {
           }
         }
       }
-
       return nextBlock.substring("minecraft:".length());
     } else {
       return null;
     }
+  }
+
+  /*
+  Decrement trhough the loop and stop one block short
+  once i've done all the columns minus the 1 block on each
+  then
+   */
+  public String getNextBlockName1() {
+    //rowstobuild
+    //columnstobuild
+    return null;
   }
 
   public void reset() {
@@ -128,6 +138,7 @@ public class BlockGenerator {
     tileColumn = 0;
     floorRow = 0;
     tileRow = 0;
+    instance = null;
   }
 
   // these getters are all needed.

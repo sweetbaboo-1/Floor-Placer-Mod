@@ -19,9 +19,6 @@
 		],
 		"client": [
 			"net.sweetbaboo.floorplacermod.FloorPlacerModClient"
-		],
-		"fabric-datagen": [
-			"net.sweetbaboo.floorplacermod.FloorPlacerModDataGenerator"
 		]
 	},
 	"mixins": [
