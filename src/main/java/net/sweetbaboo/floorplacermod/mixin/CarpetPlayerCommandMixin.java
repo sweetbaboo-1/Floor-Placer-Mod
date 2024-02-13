@@ -4,6 +4,9 @@ import access.ServerPlayerEntityAccess;
 import carpet.commands.PlayerCommand;
 import carpet.fakes.ServerPlayerInterface;
 import carpet.helpers.EntityPlayerActionPack;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -25,6 +28,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -35,21 +41,25 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 public abstract class CarpetPlayerCommandMixin {
 
   private static List<String> fileNames;
-  private static final String SCHEMATIC_FOLDER="resources\\schematics\\";
+  private static List<String> schematicNames;
+  private static int selectedIndex;
+
+  private static final String SCHEMATIC_FOLDER="syncmatics\\";
 
   @SuppressWarnings("unchecked")
   @ModifyExpressionValue(method="register", at=@At(value="INVOKE", target="Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;then(Lcom/mojang/brigadier/builder/ArgumentBuilder;)Lcom/mojang/brigadier/builder/ArgumentBuilder;", ordinal=1), remap=false)
   private static ArgumentBuilder<ServerCommandSource, ?> insertBuildFloorLiteral(ArgumentBuilder<ServerCommandSource, ?> original) {
     return original.then(((LiteralArgumentBuilder<ServerCommandSource>) (Object) literal("buildFloor"))
-            .then(CommandManager.argument("filename", StringArgumentType.word())
+            .then(CommandManager.argument("schematic", StringArgumentType.word())
                     .suggests((c, b) -> suggestStrings(b))
                     .then(CommandManager.argument("rows", IntegerArgumentType.integer())
                             .then(CommandManager.argument("columns", IntegerArgumentType.integer())
                                     .executes(context -> {
-                                      var player = getPlayer(context);
-                                      String fileName = StringArgumentType.getString(context, "filename");
-                                      int rows = IntegerArgumentType.getInteger(context, "rows");
-                                      int columns = IntegerArgumentType.getInteger(context, "columns");
+                                      var player=getPlayer(context);
+                                      String schematicName = StringArgumentType.getString(context, "schematic");
+                                      String fileName = getFileNameFromSchematicName(schematicName);
+                                      int rows=IntegerArgumentType.getInteger(context, "rows");
+                                      int columns=IntegerArgumentType.getInteger(context, "columns");
                                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
                                       context.getSource().sendFeedback(() -> Text.of("Started " + player.getDisplayName().getString() + " building floor."), false);
                                       BlockGenerator.getInstance(fileName, rows, columns);
@@ -61,28 +71,28 @@ public abstract class CarpetPlayerCommandMixin {
             )
             .then(((LiteralArgumentBuilder<ServerCommandSource>) (Object) literal("saveState"))
                     .executes(context -> {
-                      var player = getPlayer(context);
+                      var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(false);
-                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
-                      String message = blockGenerator.saveState() ? "Successfully saved " : "Failed to save ";
+                      BlockGenerator blockGenerator=BlockGenerator.getInstance();
+                      String message=blockGenerator.saveState() ? "Successfully saved " : "Failed to save ";
                       context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getTileName()), false);
                       return 1;
                     })
             )
             .then(((LiteralArgumentBuilder<ServerCommandSource>) (Object) literal("loadState"))
                     .executes(context -> {
-                      var player = getPlayer(context);
+                      var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
-                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
+                      BlockGenerator blockGenerator=BlockGenerator.getInstance();
                       BlockSelector.selectNextBlock(player);
-                      String message = blockGenerator.loadState() ? "Successfully loaded " : "Failed to load ";
+                      String message=blockGenerator.loadState() ? "Successfully loaded " : "Failed to load ";
                       context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getTileName()), false);
                       return 1;
                     })
             )
             .then(((LiteralArgumentBuilder<ServerCommandSource>) (Object) literal("stop"))
                     .executes(context -> {
-                      var player = getPlayer(context);
+                      var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(false);
                       BlockGenerator.getInstance().reset();
                       context.getSource().sendFeedback(() -> Text.of("Stopped " + player.getDisplayName().getString() + " building floor"), false);
@@ -92,24 +102,33 @@ public abstract class CarpetPlayerCommandMixin {
     );
   }
 
+  private static String getFileNameFromSchematicName(String schematicName) {
+    return fileNames.get(schematicName.indexOf(schematicName));
+  }
+
   private static CompletableFuture<Suggestions> suggestStrings(SuggestionsBuilder builder) {
-    generateSuggestionList(); // Ensure fileNames list is populated
-    String remaining=builder.getRemaining().toLowerCase(); // Get the remaining text typed by the user
-    // Iterate through the suggestion list and add matching suggestions to the builder
-    fileNames.stream()
+    generateSuggestionList();
+    String remaining=builder.getRemaining().toLowerCase();
+    schematicNames.stream()
             .filter(suggestion -> suggestion.toLowerCase().startsWith(remaining))
             .forEach(builder::suggest);
-    return builder.buildFuture(); // Build and return the suggestions
+    return builder.buildFuture();
   }
 
   private static void generateSuggestionList() {
     fileNames=new ArrayList<>();
+    schematicNames=new ArrayList<>();
+
     File directory=new File(SCHEMATIC_FOLDER);
     File[] files=directory.listFiles();
+
     if (files != null) {
       for (File file : files) {
         if (file.isFile()) {
-          fileNames.add(file.getName());
+          String filename = file.getName();
+          String name = LitematicaLoader.loadLitematicaFile(filename).name();
+          schematicNames.add(name);
+          fileNames.add(filename);
         }
       }
     }

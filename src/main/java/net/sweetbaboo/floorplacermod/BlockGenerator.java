@@ -5,13 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import net.sandrohc.schematic4j.schematic.Schematic;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class BlockGenerator {
-  private static final String FILE_PATH = "resources\\floorplacerState\\blockGeneratorState.json";
+  private static final String STATE_FILE_PATH= "resources\\floorplacerState\\blockGeneratorState.json";
+//  private static final String SYNCMATICS_PATH= "syncmatics\\";
 
   private static BlockGenerator instance;
 
@@ -51,7 +51,7 @@ public class BlockGenerator {
     gsonBuilder.excludeFieldsWithoutExposeAnnotation(); // Only fields with @Expose will be serialized
     Gson gson = gsonBuilder.create();
 
-    try (FileWriter writer = new FileWriter(FILE_PATH)) {
+    try (FileWriter writer = new FileWriter(STATE_FILE_PATH)) {
       gson.toJson(this, writer);
       return true;
     } catch (IOException e) {
@@ -62,7 +62,7 @@ public class BlockGenerator {
 
   public boolean loadState() {
     Gson gson = new Gson();
-    try (FileReader reader = new FileReader(FILE_PATH)) {
+    try (FileReader reader = new FileReader(STATE_FILE_PATH)) {
       BlockGenerator loadedState = gson.fromJson(reader, BlockGenerator.class);
       this.filename = loadedState.filename;
       this.rowsToBuild = loadedState.rowsToBuild;
@@ -71,6 +71,7 @@ public class BlockGenerator {
       this.tileColumn = loadedState.tileColumn;
       this.floorRow = loadedState.floorRow;
       this.tileRow = loadedState.tileRow;
+      this.tile = LitematicaLoader.loadLitematicaFile(filename);
       return true;
     } catch (IOException e) {
       e.printStackTrace();
@@ -93,11 +94,6 @@ public class BlockGenerator {
   private BlockGenerator() {
   }
 
-  /**
-   * TODO: right now the way that the floor placer is set up the top row of blocks is used as the stream. This is undesired.
-   *
-   * @return
-   */
   public String getNextBlockName() {
     if (floorColumn < columnsToBuild && tileColumn < tile.width()
             && floorRow < rowsToBuild && tileRow < tile.length()) {
@@ -134,6 +130,7 @@ public class BlockGenerator {
     tileRow = 0;
   }
 
+  // these getters are all needed.
   public Schematic getTile() {
     return tile;
   }

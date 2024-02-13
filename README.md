@@ -19,21 +19,20 @@ Additionally, this mod introduces functionality to control the automation proces
 ## Usage
 1. Ensure that CarpetMod and Floor-Placer-Mod are correctly installed and loaded on your server.
 2. Save the floor schematic in the server's /resources folder.
-3. In-game, use the command "/player <name> buildFloor <filename> <rows> <columns>" to initalize the player. Every time the player is told to "use" it will place the next block.
+3. In-game, use the command "/player <name> buildFloor <filename> <rows> <columns>" to initialize the player. Every time the player is told to "use" it will place the next block.
 4. Control the automation process using "/player <name> use interval <interval>" to set an interval between each block placement, and "/player <name> stop" to pause the process.
 
 ## Known Issues
 None
 
 ## TODO
-1. Schematics currently need to be uploaded manually by someone with access to the server files. Ideally Syncmatica could be used.
-2. Make it so that the bot can use all 36 inventory slots.
+None
 
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
 
 ## License
-AutoFloor is licensed under the [MIT License](LICENSE).
+Floor-Placer-Mod is licensed under the [MIT License](LICENSE).
 
 ## Credits
-Thank you to KikuGie for general help
+Thank you to KikuGie for general help.

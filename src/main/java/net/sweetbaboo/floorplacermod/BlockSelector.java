@@ -27,16 +27,16 @@ public class BlockSelector {
     Inventory inventory = player.getInventory();
     int hotbarSlot = -1;
 
-    for (int slot = 0; slot < 9; slot++) {
+    for (int slot = 0; slot < 36; slot++) {
       ItemStack itemStack = inventory.getStack(slot);
-      if (itemStack.getItem().toString().contains(nextBlockName.toLowerCase())) {
+      if (itemStack.getItem().toString().toLowerCase().contains(nextBlockName.toLowerCase())) {
         hotbarSlot = slot;
         break;
       }
     }
 
     if (hotbarSlot != -1) {
-      actionPack.setSlot(hotbarSlot + 1);
+      player.getInventory().swapSlotWithHotbar(hotbarSlot);
 
       // The following doesn't seem to be needed but leaving here until it works on the server.
       // player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(hotbarSlot));
