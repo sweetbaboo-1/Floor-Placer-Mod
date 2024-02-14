@@ -20,6 +20,7 @@ public class BlockSelector {
     if (nextBlockName == null) {
       playerAccess.setBuildFloor(false);
       actionPack.stopAll();
+      blockGenerator.reset();
       // TODO: somehow tell the player that the next block was null.
       return;
     }
@@ -29,7 +30,7 @@ public class BlockSelector {
 
     for (int slot=0; slot < 36; slot++) {
       ItemStack itemStack=inventory.getStack(slot);
-      if (itemStack.getItem().toString().toLowerCase().contains(nextBlockName.toLowerCase())) {
+      if (itemStack.getItem().toString().equalsIgnoreCase(nextBlockName)) {
         hotbarSlot=slot;
         break;
       }

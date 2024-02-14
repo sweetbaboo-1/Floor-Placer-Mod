@@ -76,9 +76,8 @@ public abstract class CarpetPlayerCommandMixin {
                       var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
                       BlockGenerator blockGenerator=BlockGenerator.getInstance();
-                      BlockSelector.selectNextBlock(player);
                       String message=blockGenerator.loadState() ? "Successfully loaded " : "Failed to load ";
-                      context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getTileName()), false);
+                      context.getSource().sendFeedback(() -> Text.of(message), false);
                       return 1;
                     })
             )

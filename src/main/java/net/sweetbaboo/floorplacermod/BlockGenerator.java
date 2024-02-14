@@ -5,37 +5,41 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import net.sandrohc.schematic4j.schematic.Schematic;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockGenerator {
-  private static final String STATE_FILE_PATH="resources\\floorplacerState\\blockGeneratorState.json";
+  private static final String SAVE_STATE_DIRECTORY_PATH="resources\\floorplacerState\\";
+  private static final String SAVE_STATE_FILENAME="blockGeneratorState.json";
 
   private static BlockGenerator instance;
 
-  private Schematic tile;
-
+  @Expose
+  private int index;
+  @Expose
+  private List<String> blockOrderList;
   @Expose
   private String filename;
-  @Expose
-  private int rowsToBuild;
-  @Expose
-  private int columnsToBuild;
-  @Expose
-  private int floorColumn;
-  @Expose
-  private int tileColumn;
-  @Expose
-  private int floorRow;
-  @Expose
-  private int tileRow;
+
+  private Schematic tile;
+  private int tilesX, tilesY, cols, rows;
 
   private BlockGenerator(String filename, int rowsToBuild, int columnsToBuild) {
     this.filename=filename;
     this.tile=LitematicaLoader.loadLitematicaFile(filename);
-    this.rowsToBuild=rowsToBuild;
-    this.columnsToBuild=columnsToBuild;
+
+    this.tilesX = columnsToBuild;
+    this.tilesY = rowsToBuild;
+
+    assert tile != null;
+    this.cols = tile.width();
+    this.rows = tile.length();
+    this.index = 0;
+    generateBlockOrder();
   }
 
   public static BlockGenerator getInstance(String filename, int rowsToBuild, int columnsToBuild) {
@@ -50,7 +54,15 @@ public class BlockGenerator {
     gsonBuilder.excludeFieldsWithoutExposeAnnotation(); // Only fields with @Expose will be serialized
     Gson gson=gsonBuilder.create();
 
-    try (FileWriter writer=new FileWriter(STATE_FILE_PATH)) {
+    File directory = new File(SAVE_STATE_DIRECTORY_PATH);
+    if (!directory.exists()) {
+      if (!directory.mkdirs()) {
+        System.err.println("Failed to create directory: " + SAVE_STATE_DIRECTORY_PATH);
+        return false;
+      }
+    }
+
+    try (FileWriter writer=new FileWriter(SAVE_STATE_DIRECTORY_PATH + SAVE_STATE_FILENAME)) {
       gson.toJson(this, writer);
       return true;
     } catch (IOException e) {
@@ -61,16 +73,11 @@ public class BlockGenerator {
 
   public boolean loadState() {
     Gson gson=new Gson();
-    try (FileReader reader=new FileReader(STATE_FILE_PATH)) {
+    try (FileReader reader=new FileReader(SAVE_STATE_DIRECTORY_PATH + SAVE_STATE_FILENAME)) {
       BlockGenerator loadedState=gson.fromJson(reader, BlockGenerator.class);
-      this.filename=loadedState.filename;
-      this.rowsToBuild=loadedState.rowsToBuild;
-      this.columnsToBuild=loadedState.columnsToBuild;
-      this.floorColumn=loadedState.floorColumn;
-      this.tileColumn=loadedState.tileColumn;
-      this.floorRow=loadedState.floorRow;
-      this.tileRow=loadedState.tileRow;
-      this.tile=LitematicaLoader.loadLitematicaFile(filename);
+      this.blockOrderList = loadedState.blockOrderList;
+      this.index = loadedState.index;
+      this.filename = loadedState.filename;
       return true;
     } catch (IOException e) {
       e.printStackTrace();
@@ -85,7 +92,6 @@ public class BlockGenerator {
   public static BlockGenerator getInstance() {
     if (instance == null) {
       instance=new BlockGenerator();
-      instance.loadState();
     }
     return instance;
   }
@@ -94,53 +100,39 @@ public class BlockGenerator {
   }
 
   public String getNextBlockName() {
-    if (floorColumn < columnsToBuild && tileColumn < tile.width()
-            && floorRow < rowsToBuild && tileRow < tile.length()) {
-      String nextBlock=tile.block(tileRow, 0, tileColumn).block;
-
-      tileRow++;
-      if (tileRow >= tile.length()) {
-        tileRow=0;
-        floorRow++;
-        if (floorRow >= rowsToBuild) {
-          floorRow=0;
-          tileColumn++;
-          if (tileColumn >= tile.width()) {
-            tileColumn=0;
-            floorColumn++;
-          }
-        }
-      }
-      return nextBlock.substring("minecraft:".length());
-    } else {
+    if (index >= blockOrderList.size()) {
       return null;
     }
+    String name = blockOrderList.get(index).substring("minecraft:".length());
+    index++;
+    return name;
   }
 
-  /*
-  Decrement trhough the loop and stop one block short
-  once i've done all the columns minus the 1 block on each
-  then
-   */
-  public String getNextBlockName1() {
-    //rowstobuild
-    //columnstobuild
-    return null;
+  public void generateBlockOrder() {
+    blockOrderList = new ArrayList<>();
+    for (int x = 0; x < cols * tilesY; x++) {
+      for (int y = rows * tilesX - 1; y > 0; y--) {
+        blockOrderList.add(tile.block(x % cols, 0, y % rows).block);
+      }
+    }
+    for (int x = cols * tilesX - 1; x >= 0; x--) {
+      blockOrderList.add(tile.block(0, 0, x % cols).block);
+    }
   }
 
   public void reset() {
     tile=null;
     filename=null;
-    rowsToBuild=0;
-    columnsToBuild=0;
-    floorColumn=0;
-    tileColumn=0;
-    floorRow=0;
-    tileRow=0;
+    index = 0;
+    blockOrderList = null;
+    tilesX = 0;
+    tilesY = 0;
+    cols = 0;
+    rows = 0;
     instance=null;
   }
 
-  // these getters are all needed.
+  // these getters are all needed for the serialization and deserialization for gson.
   public Schematic getTile() {
     return tile;
   }
@@ -149,27 +141,27 @@ public class BlockGenerator {
     return filename;
   }
 
-  public int getRowsToBuild() {
-    return rowsToBuild;
+  public int getIndex() {
+    return index;
   }
 
-  public int getColumnsToBuild() {
-    return columnsToBuild;
+  public List<String> getBlockOrderList() {
+    return blockOrderList;
   }
 
-  public int getFloorColumn() {
-    return floorColumn;
+  public int getTilesX() {
+    return tilesX;
   }
 
-  public int getTileColumn() {
-    return tileColumn;
+  public int getTilesY() {
+    return tilesY;
   }
 
-  public int getFloorRow() {
-    return floorRow;
+  public int getCols() {
+    return cols;
   }
 
-  public int getTileRow() {
-    return tileRow;
+  public int getRows() {
+    return rows;
   }
 }
