@@ -40,7 +40,7 @@ public class BlockSelector {
       player.getInventory().swapSlotWithHotbar(hotbarSlot);
 
       // The following doesn't seem to be needed but leaving here until it works on the server.
-      // player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(hotbarSlot));
+      // player.networkHzzzandler.sendPacket(new UpdateSelectedSlotS2CPacket(hotbarSlot));
     } else {
       playerAccess.setBuildFloor(false);
       // TODO: somehow tell the player that they didn't have the correct block.

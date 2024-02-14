@@ -18,6 +18,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.sweetbaboo.floorplacermod.BlockGenerator;
 import net.sweetbaboo.floorplacermod.BlockSelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,11 +34,12 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 @Mixin(PlayerCommand.class)
 public abstract class CarpetPlayerCommandMixin {
-
+  private static final String MOD_ID = "floor-placer-mod";
+  private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
   private static List<String> fileNames;
   private static List<String> schematicNames;
 
-  private static final String SYNCMATICA_PLACEMENT_JSON_FILEPATH="config\\syncmatica\\placements.json";
+  private static final String SYNCMATICA_PLACEMENT_JSON_FILEPATH="config" + File.separator + "syncmatica" + File.separator + "placements.json";
 
   @SuppressWarnings("unchecked")
   @ModifyExpressionValue(method="register", at=@At(value="INVOKE", target="Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;then(Lcom/mojang/brigadier/builder/ArgumentBuilder;)Lcom/mojang/brigadier/builder/ArgumentBuilder;", ordinal=1), remap=false)
@@ -54,7 +57,8 @@ public abstract class CarpetPlayerCommandMixin {
                                       int columns=IntegerArgumentType.getInteger(context, "columns");
                                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
                                       context.getSource().sendFeedback(() -> Text.of("Started " + player.getDisplayName().getString() + " building floor."), false);
-                                      BlockGenerator.getInstance(fileName, rows, columns);
+                                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
+                                      blockGenerator.init(fileName, rows, columns);
                                       BlockSelector.selectNextBlock(player);
                                       return 1;
                                     })
@@ -77,7 +81,7 @@ public abstract class CarpetPlayerCommandMixin {
                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
                       BlockGenerator blockGenerator=BlockGenerator.getInstance();
                       String message=blockGenerator.loadState() ? "Successfully loaded " : "Failed to load ";
-                      context.getSource().sendFeedback(() -> Text.of(message), false);
+                      context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getFilename()), false);
                       return 1;
                     })
             )
@@ -85,8 +89,10 @@ public abstract class CarpetPlayerCommandMixin {
                     .executes(context -> {
                       var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(false);
-                      BlockGenerator.getInstance().reset();
-                      context.getSource().sendFeedback(() -> Text.of("Stopped " + player.getDisplayName().getString() + " building floor"), false);
+                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
+                      String filename = blockGenerator.getFilename();
+                      blockGenerator.reset();
+                      context.getSource().sendFeedback(() -> Text.of("Stopped " + player.getDisplayName().getString() + " building " + filename), false);
                       return 1;
                     })
             )

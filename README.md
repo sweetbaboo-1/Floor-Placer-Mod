@@ -31,7 +31,9 @@ If you begin building a floor, stop the bot, save the state then manually change
 Because the mod doesn't change the orientation of the blocks (they're all placed horizontally) blocks that require specific orientation are not compatible. 
 
 ## TODO
-Restructure the getNextBlock() method to produce the intuitive result. 
+1. Add error handling
+2. Fix save and load state.
+
 
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
