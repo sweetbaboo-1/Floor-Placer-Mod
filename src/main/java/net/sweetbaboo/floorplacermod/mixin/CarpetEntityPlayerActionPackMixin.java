@@ -18,7 +18,7 @@ public class CarpetEntityPlayerActionPackMixin {
   private void buildFloor(ServerPlayerEntity player, EntityPlayerActionPack.Action action, CallbackInfoReturnable<Boolean> cir) {
     ServerPlayerEntityAccess playerAccess=(ServerPlayerEntityAccess) player;
     if (!playerAccess.isBuildingFloor()) return;
-    BlockSelector.selectNextBlock(player);
+    BlockSelector.selectNextBlock(player, player.getCommandSource());
     player.closeHandledScreen();
   }
 }

@@ -2,7 +2,10 @@ package net.sweetbaboo.floorplacermod;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import net.sandrohc.schematic4j.schematic.Schematic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,23 +44,38 @@ public class BlockGenerator {
   private Schematic tile;
 
   private BlockGenerator() {
+    blockOrderList = new ArrayList<>();
+    filename = "";
   }
 
-  public void init(String filename, int rowsToBuild, int columnsToBuild) {
+  public boolean init(String filename, int rowsToBuild, int columnsToBuild, ServerCommandSource source) {
     this.filename=filename;
-    this.tile=LitematicaLoader.loadLitematicaFile(filename);
+    this.tile=LitematicaLoader.loadLitematicaFile(filename, source);
+
+    if (this.tile == null) {
+      LOGGER.error("BlockGenerator.init failed to load the schematic " + filename);
+      source.sendFeedback(() -> Text.of("BlockGenerator.init failed to load the schematic " + filename), false);
+      this.filename = null;
+      return false;
+    }
 
     this.tilesX=columnsToBuild;
     this.tilesY=rowsToBuild;
 
-    assert tile != null;
     this.cols=tile.width();
     this.rows=tile.length();
     this.index=0;
     generateBlockOrder();
+    return true;
   }
 
-  public boolean saveState() {
+  public boolean saveState(ServerCommandSource source) {
+
+    if (tile == null) {
+      source.sendFeedback(() -> Text.of("Nothing to save..."), false);
+      return true;
+    }
+
     GsonBuilder gsonBuilder=new GsonBuilder().setPrettyPrinting();
     gsonBuilder.excludeFieldsWithoutExposeAnnotation(); // Only fields with @Expose will be serialized
     Gson gson=gsonBuilder.create();
@@ -65,40 +83,59 @@ public class BlockGenerator {
     File directory=new File(SAVE_STATE_DIRECTORY_PATH);
     if (!directory.exists()) {
       if (!directory.mkdirs()) {
-        System.err.println("Failed to create directory: " + SAVE_STATE_DIRECTORY_PATH);
+        LOGGER.error("Failed to create directory: " + SAVE_STATE_DIRECTORY_PATH);
+        source.sendFeedback(() -> Text.of("Could not create the directory"), false);
         return false;
       }
     }
 
     try (FileWriter writer=new FileWriter(SAVE_STATE_DIRECTORY_PATH + SAVE_STATE_FILENAME)) {
       gson.toJson(this, writer);
+      source.sendFeedback(() -> Text.of("Saved " + tile.name()), false);
       return true;
     } catch (IOException e) {
       e.printStackTrace();
+      source.sendFeedback(() -> Text.of("Error serializing BlockGenerator"), false);
       return false;
     }
   }
 
-  public boolean loadState() {
-    Gson gson=new Gson();
-    try (FileReader reader=new FileReader(SAVE_STATE_DIRECTORY_PATH + SAVE_STATE_FILENAME)) {
-      BlockGenerator loadedState=gson.fromJson(reader, BlockGenerator.class);
-      this.blockOrderList=loadedState.blockOrderList;
-      this.index=loadedState.index;
-      this.filename=loadedState.filename;
-      this.tile=LitematicaLoader.loadLitematicaFile(this.filename);
-      this.tilesX=loadedState.tilesX;
-      this.tilesY=loadedState.tilesY;
-      this.cols=loadedState.cols;
-      this.rows=loadedState.rows;
+  public boolean loadState(ServerCommandSource source) {
+    File file = new File(SAVE_STATE_DIRECTORY_PATH + SAVE_STATE_FILENAME);
+    if (!file.exists()) {
+      source.sendFeedback(() -> Text.of("Nothing to load..."), false);
+      return false;
+    }
+
+    Gson gson = new Gson();
+    try (FileReader reader = new FileReader(file)) {
+      BlockGenerator loadedState = gson.fromJson(reader, BlockGenerator.class);
+      this.blockOrderList = loadedState.blockOrderList;
+      this.index = loadedState.index;
+      this.filename = loadedState.filename;
+      this.tile = LitematicaLoader.loadLitematicaFile(this.filename, source);
+      this.tilesX = loadedState.tilesX;
+      this.tilesY = loadedState.tilesY;
+      this.cols = loadedState.cols;
+      this.rows = loadedState.rows;
+      source.sendFeedback(() -> Text.of("State loaded successfully"), false);
       return true;
     } catch (IOException e) {
       e.printStackTrace();
+      source.sendFeedback(() -> Text.of("Error loading save state"), false);
+      return false;
+    } catch (JsonSyntaxException e) {
+      e.printStackTrace();
+      source.sendFeedback(() -> Text.of("Error parsing JSON"), false);
       return false;
     }
   }
+
 
   public String getTileName() {
+    if (this.tile == null) {
+      return "null";
+    }
     return this.tile.name();
   }
 
@@ -109,8 +146,10 @@ public class BlockGenerator {
     return instance;
   }
 
-
   public String getNextBlockName() {
+    if (blockOrderList == null) {
+      return null;
+    }
     if (index >= blockOrderList.size()) {
       return null;
     }
@@ -128,6 +167,12 @@ public class BlockGenerator {
     }
     for (int x=cols * tilesX - 1; x >= 0; x--) {
       blockOrderList.add(tile.block(0, 0, x % cols).block);
+    }
+  }
+
+  public void decrementIndex() {
+    if (index > 0) {
+      index--;
     }
   }
 
@@ -167,4 +212,5 @@ public class BlockGenerator {
   public int getRows() {
     return rows;
   }
+
 }

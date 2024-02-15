@@ -34,8 +34,8 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 @Mixin(PlayerCommand.class)
 public abstract class CarpetPlayerCommandMixin {
-  private static final String MOD_ID = "floor-placer-mod";
-  private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+  private static final String MOD_ID="floor-placer-mod";
+  private static final Logger LOGGER=LoggerFactory.getLogger(MOD_ID);
   private static List<String> fileNames;
   private static List<String> schematicNames;
 
@@ -55,11 +55,31 @@ public abstract class CarpetPlayerCommandMixin {
                                       String fileName=getFileNameFromSchematicName(schematicName);
                                       int rows=IntegerArgumentType.getInteger(context, "rows");
                                       int columns=IntegerArgumentType.getInteger(context, "columns");
+
+                                      if (rows <= 0) {
+                                        context.getSource().sendFeedback(() -> Text.of("Rows must be >= 1"), false);
+                                        return 1;
+                                      }
+                                      if (columns <= 0) {
+                                        context.getSource().sendFeedback(() -> Text.of("Columns must be >= 1"), false);
+                                        return 1;
+                                      }
+
+                                      BlockGenerator blockGenerator=BlockGenerator.getInstance();
+
                                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
-                                      context.getSource().sendFeedback(() -> Text.of("Started " + player.getDisplayName().getString() + " building floor."), false);
-                                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
-                                      blockGenerator.init(fileName, rows, columns);
-                                      BlockSelector.selectNextBlock(player);
+
+                                      if (!blockGenerator.init(fileName, rows, columns, context.getSource())) {
+                                        LOGGER.error(String.format("BlockGenerator.init failed\nfilename: %s\nrows: %d\ncols: %d", fileName, rows, columns));
+                                        context.getSource().sendFeedback(() -> Text.of(String.format("BlockGenerator.init failed\nfilename: %s\nrows: %d\ncols: %d", fileName, rows, columns)), false);
+                                        return 0;
+                                      } else {
+                                        context.getSource().sendFeedback(() -> Text.of("Started " + player.getDisplayName().getString() + " building floor."), false);
+                                      }
+
+                                      if (BlockSelector.selectNextBlock(player, context.getSource()) == 0) {
+                                        return 0;
+                                      }
                                       return 1;
                                     })
                             )
@@ -70,8 +90,8 @@ public abstract class CarpetPlayerCommandMixin {
                       var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(false);
                       BlockGenerator blockGenerator=BlockGenerator.getInstance();
-                      String message=blockGenerator.saveState() ? "Successfully saved " : "Failed to save ";
-                      context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getTileName()), false);
+
+                      if (!blockGenerator.saveState(context.getSource())) return 0;
                       return 1;
                     })
             )
@@ -80,8 +100,8 @@ public abstract class CarpetPlayerCommandMixin {
                       var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(true);
                       BlockGenerator blockGenerator=BlockGenerator.getInstance();
-                      String message=blockGenerator.loadState() ? "Successfully loaded " : "Failed to load ";
-                      context.getSource().sendFeedback(() -> Text.of(message + blockGenerator.getFilename()), false);
+
+                      if (!blockGenerator.loadState(context.getSource())) return 0;
                       return 1;
                     })
             )
@@ -89,10 +109,9 @@ public abstract class CarpetPlayerCommandMixin {
                     .executes(context -> {
                       var player=getPlayer(context);
                       ((ServerPlayerEntityAccess) player).setBuildFloor(false);
-                      BlockGenerator blockGenerator = BlockGenerator.getInstance();
-                      String filename = blockGenerator.getFilename();
+                      BlockGenerator blockGenerator=BlockGenerator.getInstance();
                       blockGenerator.reset();
-                      context.getSource().sendFeedback(() -> Text.of("Stopped " + player.getDisplayName().getString() + " building " + filename), false);
+                      context.getSource().sendFeedback(() -> Text.of("Stopped"), false);
                       return 1;
                     })
             )
@@ -134,12 +153,10 @@ public abstract class CarpetPlayerCommandMixin {
     }
   }
 
-
   @Unique
   private static ServerPlayerEntity getPlayer(CommandContext<ServerCommandSource> context) {
     String playerName=StringArgumentType.getString(context, "player");
     MinecraftServer server=context.getSource().getServer();
     return server.getPlayerManager().getPlayer(playerName);
   }
-
 }

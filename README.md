@@ -27,13 +27,10 @@ Additionally, this mod introduces functionality to control the automation proces
 You can save the progress of the build with the "/player <name> buildFloor saveState" command, and load it with the "/player <name> buildFloor loadState". Only one build can be saved at a time, saving again overwrites the previous save.
 
 ## Known Issues
-If you begin building a floor, stop the bot, save the state then manually change the bot's hotbar, then load the state and continue placing, one block will be wrong. I don't know why anyone would do this but someone will, and now I can say it was in the readme go away.
-Because the mod doesn't change the orientation of the blocks (they're all placed horizontally) blocks that require specific orientation are not compatible. 
+1. If you begin building a floor, stop the bot, save the state then manually change the bot's hotbar, then load the state and continue placing, one block will be wrong. I don't know why anyone would do this but someone will, and now I can say "it was in the readme go away."
+2. Because the mod doesn't change the orientation of the blocks (they're all placed with the same orientation) blocks that require specific orientation are not compatible. 
 
 ## TODO
-1. Add error handling
-2. Fix save and load state.
-
 
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
