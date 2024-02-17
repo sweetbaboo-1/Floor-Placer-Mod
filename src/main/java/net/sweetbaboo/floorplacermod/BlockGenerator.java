@@ -131,7 +131,6 @@ public class BlockGenerator {
     }
   }
 
-
   public String getTileName() {
     if (this.tile == null) {
       return "null";
@@ -167,12 +166,6 @@ public class BlockGenerator {
     }
     for (int x=cols * tilesX - 1; x >= 0; x--) {
       blockOrderList.add(tile.block(0, 0, x % cols).block);
-    }
-  }
-
-  public void decrementIndex() {
-    if (index > 0) {
-      index--;
     }
   }
 
@@ -212,5 +205,4 @@ public class BlockGenerator {
   public int getRows() {
     return rows;
   }
-
 }

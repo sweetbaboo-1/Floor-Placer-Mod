@@ -26,7 +26,6 @@ public class LitematicaLoader {
     } catch (ParsingException | IOException e) {
       LOGGER.error("Failed to load schematic: " + filename);
       source.sendFeedback(() -> Text.of("Failed to load schematic"), false);
-
       e.printStackTrace();
     }
     return null;

@@ -50,19 +50,8 @@ public class BlockSelector {
 
     if (hotbarSlot != -1) {
       player.getInventory().swapSlotWithHotbar(hotbarSlot);
-
-      // The following doesn't seem to be needed but leaving here until it works on the server.
-      // player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(hotbarSlot));
-
       return 1;
-    } else {
-      actionPack.stopAll();
-      playerAccess.setBuildFloor(false);
-      blockGenerator.saveState(source);
-      blockGenerator.decrementIndex(); // this is to offset the failed attempt.
-      LOGGER.info(String.format("Player %s does not have %s. Stopping all actions and saving state.", player.getDisplayName().getString(), nextBlockName));
-      source.sendFeedback(() -> Text.of(String.format("Player %s does not have %s. Stopping all actions and saving state.", player.getDisplayName().getString(), nextBlockName)), false);
-      return 0;
     }
+    return 0;
   }
 }

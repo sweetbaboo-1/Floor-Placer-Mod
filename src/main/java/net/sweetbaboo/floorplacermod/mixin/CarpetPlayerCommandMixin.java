@@ -52,7 +52,7 @@ public abstract class CarpetPlayerCommandMixin {
                                     .executes(context -> {
                                       var player=getPlayer(context);
                                       String schematicName=StringArgumentType.getString(context, "schematic");
-                                      String fileName=getFileNameFromSchematicName(schematicName);
+                                      String fileName=fileNames.get(schematicName.indexOf(schematicName));
                                       int rows=IntegerArgumentType.getInteger(context, "rows");
                                       int columns=IntegerArgumentType.getInteger(context, "columns");
 
@@ -118,10 +118,7 @@ public abstract class CarpetPlayerCommandMixin {
     );
   }
 
-  private static String getFileNameFromSchematicName(String schematicName) {
-    return fileNames.get(schematicName.indexOf(schematicName));
-  }
-
+  // make the suggestions as to which schematics could be built
   private static CompletableFuture<Suggestions> suggestStrings(SuggestionsBuilder builder) {
     generateSuggestionList();
     String remaining=builder.getRemaining().toLowerCase();
