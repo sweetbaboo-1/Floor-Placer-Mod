@@ -31,7 +31,8 @@ You can save the progress of the build with the "/player <name> buildFloor saveS
 2. Because the mod doesn't change the orientation of the blocks (they're all placed with the same orientation) blocks that require specific orientation are not compatible. 
 
 ## TODO
-1. fix logging not showing up/remove sl4j
+1. Remove slf4j from the build's .jar
+2. Make it compatible with being a client-side mod.
 
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
