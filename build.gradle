@@ -12,6 +12,18 @@ base {
 
 repositories {
 	maven { url "https://masa.dy.fi/maven" }
+	maven { url "https://maven.kikugie.dev/third-party"} // for Litematica
+	exclusiveContent { // for Syncmatica
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 fabricApi {
@@ -24,14 +36,13 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// litematica stuff
-	implementation 'net.sandrohc:schematic4j:1.1.0'
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	// Carpet Mod
+	// Litematica stuff
+	include(implementation "net.sandrohc:schematic4j:1.1.0")
 	modImplementation "carpet:fabric-carpet:${project.carpet_version}"
+
+	// Testing
+	modRuntimeOnly "maven.modrinth:syncmatica:1.20.1-0.3.11"
+	modRuntimeOnly "fi.dy.masa:litematica:0.15.3+1.20.1"
 }
 
 processResources {
@@ -73,20 +84,4 @@ publishing {
 	repositories {
 
 	}
-}
-
-configurations {
-	provided
-	// Make compile extend from our provided configuration so that things added to bundled end up on the compile classpath
-	compile.extendsFrom(provided)
-}
-
-dependencies {
-	// implementation 'net.sandrohc:schematic4j:1.1.0'
-	provided group: 'net.sandrohc', name: 'schematic4j', version: '1.1.0'
-}
-
-jar {
-	// Include all of the jars from the bundled configuration in our jar
-	from configurations.provided.asFileTree.files.collect { zipTree(it) }
 }
