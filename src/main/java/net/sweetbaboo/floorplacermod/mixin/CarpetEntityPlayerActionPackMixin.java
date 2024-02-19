@@ -1,6 +1,6 @@
 package net.sweetbaboo.floorplacermod.mixin;
 
-import access.ServerPlayerEntityAccess;
+import net.sweetbaboo.floorplacermod.access.ServerPlayerEntityAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;

@@ -1,4 +1,4 @@
-package access;
+package net.sweetbaboo.floorplacermod.access;
 
 public interface ServerPlayerEntityAccess {
   boolean isBuildingFloor();

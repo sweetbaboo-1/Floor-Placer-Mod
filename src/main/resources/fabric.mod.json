@@ -16,21 +16,14 @@
 	"entrypoints": {
 		"main": [
 			"net.sweetbaboo.floorplacermod.FloorPlacerMod"
-		],
-		"client": [
-			"net.sweetbaboo.floorplacermod.FloorPlacerModClient"
 		]
 	},
 	"mixins": [
 		"floorplacermod.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.6",
+		"fabricloader": ">=0.15",
 		"minecraft": "~1.20.1",
-		"java": ">=17",
-		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
+		"java": ">=17"
 	}
 }

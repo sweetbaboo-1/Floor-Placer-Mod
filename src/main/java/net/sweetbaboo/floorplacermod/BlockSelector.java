@@ -1,6 +1,5 @@
 package net.sweetbaboo.floorplacermod;
 
-import access.ServerPlayerEntityAccess;
 import carpet.fakes.ServerPlayerInterface;
 import carpet.helpers.EntityPlayerActionPack;
 import net.minecraft.inventory.Inventory;
@@ -8,13 +7,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.sweetbaboo.floorplacermod.access.ServerPlayerEntityAccess;
 
 public class BlockSelector {
-  private static final String MOD_ID = "floor-placer-mod";
-  private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-
   public static int selectNextBlock(ServerPlayerEntity player, ServerCommandSource source) {
     ServerPlayerEntityAccess playerAccess=(ServerPlayerEntityAccess) player;
     EntityPlayerActionPack actionPack=((ServerPlayerInterface) player).getActionPack();
@@ -22,8 +17,8 @@ public class BlockSelector {
     BlockGenerator blockGenerator=BlockGenerator.getInstance();
 
     if (blockGenerator == null) {
-      LOGGER.error("BlockSelector.selectNextBlock: blockGenerator is null");
-      source.sendFeedback(() -> Text.of("BlockSelector.selectNextBlock: blockGenerator is null"), false);
+      FloorPlacerMod.LOGGER.error("BlockSelector.selectNextBlock: blockGenerator is null");
+      source.sendError(Text.of("BlockSelector.selectNextBlock: blockGenerator is null"));
       return 0;
     }
 
