@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SchematicFileArgumentType implements ArgumentType<String> {
     private static final Gson GSON = new Gson();
-    private static final CommandSyntaxException READ_ERROR = new SimpleCommandExceptionType(Text.of("Error reading schematic data. Check logs game for details.")).create();
+    private static final CommandSyntaxException READ_ERROR = new SimpleCommandExceptionType(Text.of("Error reading schematic data. Check game logs for details.")).create();
     private static final CommandSyntaxException NO_SCHEMATICS = new SimpleCommandExceptionType(Text.of("No loaded schematics found")).create();
     private static final DynamicCommandExceptionType INVALID_NAME = new DynamicCommandExceptionType(file -> Text.of("Invalid schematic: " + file));
 
