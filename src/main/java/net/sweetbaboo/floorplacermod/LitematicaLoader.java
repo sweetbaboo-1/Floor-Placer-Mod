@@ -1,32 +1,29 @@
 package net.sweetbaboo.floorplacermod;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.sandrohc.schematic4j.SchematicLoader;
 import net.sandrohc.schematic4j.exception.ParsingException;
 import net.sandrohc.schematic4j.schematic.Schematic;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 public class LitematicaLoader {
-  private static final String SYNCMATICA_FOLDER="syncmatics" + File.separator;
-  private static final String MOD_ID = "floor-placer-mod";
-  private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+  private static final Path SYNCMATICA_FOLDER= FabricLoader.getInstance().getGameDir().resolve("syncmatics");
 
+  @Nullable
   public static Schematic loadLitematicaFile(String filename, ServerCommandSource source) {
-    final String filePath=SYNCMATICA_FOLDER + filename;
     Schematic schematic;
     try {
-      schematic=SchematicLoader.load(filePath);
+      schematic=SchematicLoader.load(SYNCMATICA_FOLDER.resolve(filename));
       source.sendFeedback(() -> Text.of("Loaded schematic"), false);
       return schematic;
     } catch (ParsingException | IOException e) {
-      LOGGER.error("Failed to load schematic: " + filename);
-      source.sendFeedback(() -> Text.of("Failed to load schematic"), false);
-      e.printStackTrace();
+      FloorPlacerMod.LOGGER.error("Failed to load schematic: %s".formatted(filename), e);
+      source.sendError(Text.of("Failed to load schematic"));
     }
     return null;
   }
