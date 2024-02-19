@@ -20,8 +20,8 @@ public class BuildFloorCommand {
     return literal("buildFloor")
         .then(literal("schematic")
             .then(argument("file", new SchematicFileArgumentType())
-                .then(argument("rows", IntegerArgumentType.integer(1))
-                    .then(argument("columns", IntegerArgumentType.integer(1))
+                .then(argument("width", IntegerArgumentType.integer(1))
+                    .then(argument("length", IntegerArgumentType.integer(1))
                         .executes(BuildFloorCommand::loadSchematic)))))
         .then(literal("save")
             .executes(BuildFloorCommand::saveState))
@@ -64,13 +64,13 @@ public class BuildFloorCommand {
     if (player == null) return -1;
 
     String schematic = context.getArgument("file", String.class);
-    int rows = IntegerArgumentType.getInteger(context, "rows");
-    int columns = IntegerArgumentType.getInteger(context, "columns");
+    int floorWidth = IntegerArgumentType.getInteger(context, "width");
+    int floorLength = IntegerArgumentType.getInteger(context, "length");
 
     BlockGenerator blockGenerator = BlockGenerator.getInstance();
 
-    if (!blockGenerator.init(schematic, rows, columns, context.getSource())) {
-      context.getSource().sendError(Text.of(String.format("BlockGenerator.init failed\nfilename: %s\nrows: %d\ncols: %d", schematic, rows, columns)));
+    if (!blockGenerator.init(schematic, floorWidth, floorLength, context.getSource())) {
+      context.getSource().sendError(Text.of(String.format("BlockGenerator.init failed\nfilename: %s\nwidth: %d\nlength: %d", schematic, floorWidth, floorLength)));
       return -1;
     } else {
       context.getSource().sendFeedback(() -> Text.of("Started %s building floor.".formatted(player.getDisplayName().getString())), false);
