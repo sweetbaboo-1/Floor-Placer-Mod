@@ -21,8 +21,10 @@ Additionally, this mod introduces functionality to control the automation proces
 1. Ensure that CarpetMod, Syncmatica, and Floor-Placer-Mod are correctly installed and loaded on your server.
 2. Save the schematic that you would like to build first selecting the north-west point, then the south-east point. Make sure that your schematic is in the x, z plane and only 1 block tall.
 3. Create a placement of the schematic and use Syncmatica to sync it to the server. This is what uploads the file to a location where the mod is able to access it. The location of the synced schematic is not relevant. 
-4. In-game, use the command "/player <name> buildFloor <schematic-name> <rows> <columns>" to initialize the player. Every time the player is told to "use" it will place the next block.
+4. In-game, use the command "/player <name> buildFloor <schematic-name> <rows> <columns>" (see image below) to initialize the player. Every time the player is told to "use" it will place the next block.
 5. Control the automation process using "/player <name> use interval <interval>" to set an interval between each block placement, and "/player <name> stop" to pause the process.
+
+![Example of a 6x2 floor](src/main/resources/assets/floorplacermod/exampleFloor.png)
 
 You can save the progress of the build with the "/player <name> buildFloor saveState" command, and load it with the "/player <name> buildFloor loadState". Only one build can be saved at a time, saving again overwrites the previous save.
 
@@ -31,8 +33,7 @@ You can save the progress of the build with the "/player <name> buildFloor saveS
 2. Because the mod doesn't change the orientation of the blocks (they're all placed with the same orientation) blocks that require specific orientation are not compatible. 
 
 ## TODO
-1. Remove slf4j from the build's .jar
-2. Make it compatible with being a client-side mod.
+1. Fix BlockGenerator so that multiple builds can happen in parallel
 
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
@@ -41,4 +42,4 @@ Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have
 Floor-Placer-Mod is licensed under the [MIT License](LICENSE).
 
 ## Credits
-Thank you to KikuGie for help with the mixins.
+Thank you to KikuGie.

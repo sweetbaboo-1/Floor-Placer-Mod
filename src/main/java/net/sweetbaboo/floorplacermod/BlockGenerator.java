@@ -22,11 +22,10 @@ public class BlockGenerator {
   private int index;
   private List<String> blockOrderList;
   private String filename;
-  private int tilesX;
   private int tilesY;
+  private int tilesX;
   private int cols;
   private int rows;
-  // Transient parameter excludes from serialization. Static fields are ignored by default.
   private transient Schematic tile;
 
   private BlockGenerator() {
@@ -52,8 +51,8 @@ public class BlockGenerator {
       return false;
     }
 
-    this.tilesX = columnsToBuild;
-    this.tilesY = rowsToBuild;
+    this.tilesY= columnsToBuild;
+    this.tilesX= rowsToBuild;
 
     this.cols = tile.width();
     this.rows = tile.length();
@@ -101,8 +100,8 @@ public class BlockGenerator {
       this.index = loadedState.index;
       this.filename = loadedState.filename;
       this.tile = LitematicaLoader.loadLitematicaFile(this.filename, source);
-      this.tilesX = loadedState.tilesX;
-      this.tilesY = loadedState.tilesY;
+      this.tilesY= loadedState.tilesY;
+      this.tilesX= loadedState.tilesX;
       this.cols = loadedState.cols;
       this.rows = loadedState.rows;
       source.sendFeedback(() -> Text.of("State loaded successfully"), false);
@@ -139,12 +138,12 @@ public class BlockGenerator {
 
   public void generateBlockOrder() {
     blockOrderList = new ArrayList<>();
-    for (int x = 0; x < cols * tilesY; x++) {
-      for (int y = rows * tilesX - 1; y > 0; y--) {
+    for (int x=0; x < cols * tilesX; x++) {
+      for (int y=rows * tilesY - 1; y > 0; y--) {
         blockOrderList.add(tile.block(x % cols, 0, y % rows).block);
       }
     }
-    for (int x = cols * tilesX - 1; x >= 0; x--) {
+    for (int x=cols * tilesY - 1; x >= 0; x--) {
       blockOrderList.add(tile.block(0, 0, x % cols).block);
     }
   }

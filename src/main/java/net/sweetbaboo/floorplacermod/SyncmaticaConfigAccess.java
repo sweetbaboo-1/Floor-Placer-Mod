@@ -10,7 +10,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Objects;
 
-// This is separated to prevent MinecraftClient calls on a dedicated server.
+// Prevents MinecraftClient calls on a dedicated server.
 public class SyncmaticaConfigAccess {
     private static final Path PLACEMENTS = Path.of("syncmatica/placements.json");
 
