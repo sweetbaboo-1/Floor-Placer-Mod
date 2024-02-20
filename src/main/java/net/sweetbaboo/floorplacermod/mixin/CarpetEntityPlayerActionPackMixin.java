@@ -25,7 +25,7 @@ public class CarpetEntityPlayerActionPackMixin {
   // for some reason this gets called 2x per use. I don't know why, but if it ain't broke, don't fix it.
   private ActionResult redirectInteractBlock(ServerPlayerInteractionManager interactionManager, ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult blockHit) {
     ServerPlayerEntityAccess playerAccess = (ServerPlayerEntityAccess) player;
-    if (!playerAccess.isBuildingFloor()) return ActionResult.FAIL;
+    if (!playerAccess.isBuildingFloor()) return player.interactionManager.interactBlock(player, player.getServerWorld(), stack, hand, blockHit);
 
     // we don't support offhand
     Hand mainHand = Hand.MAIN_HAND;

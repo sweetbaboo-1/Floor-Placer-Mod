@@ -21,7 +21,7 @@ Floor-Placer-Mod is an extension mod for CarpetMod designed to automate the proc
 5. Restart your Minecraft server.
 
 ## Usage
-1. Ensure that CarpetMod, Syncmatica, and Floor-Placer-Mod are correctly installed and loaded on your server.
+1. Ensure that CarpetMod, Syncmatica, and Floor-Placer-Mod are correctly installed and loaded on your server/client.
 2. Save the schematic that you would like to build first selecting the north-west point, then the south-east point. Make sure that your schematic is in the x, z plane and only 1 block tall.
 3. Create a placement of the schematic and use Syncmatica to sync it to the server. This is what uploads the file to a location where the mod is able to access it. The location of the synced schematic is not relevant. 
 4. In-game, use the command "/player \<name> buildFloor schematic <schematic-name> <width> <length>" (see image below) to initialize the player. The width is how many tiles across, and the length is how many tiles long.
