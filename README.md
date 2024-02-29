@@ -6,7 +6,7 @@ Floor-Placer-Mod is an extension mod for CarpetMod designed to automate the proc
 ### Example Floor
 
 ![Example build](src/main/resources/assets/floorplacermod/pillarsOfEternity.png)
-1k x 5k floor fully printed by the mod.
+1k x 5k floor fully printed by the mod. (Yes this is a screenshot of minecraft zoom in)
 
 ## Features
 - Automates floor building using the "/player \<name> buildFloor <filename> <rows> <columns>" command.
