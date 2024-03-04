@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.sandrohc.schematic4j.schematic.Schematic;
@@ -88,6 +89,7 @@ public class BlockGenerator {
       BlockGenerator loadedState = GSON.fromJson(reader, BlockGenerator.class);
       this.blockOrderList = loadedState.blockOrderList;
       this.index = loadedState.index;
+      BlockSelector.selectNextBlock(source.getPlayer(), source, false);
       source.sendFeedback(() -> Text.of("State loaded successfully"), false);
       return true;
     } catch (IOException e) {
