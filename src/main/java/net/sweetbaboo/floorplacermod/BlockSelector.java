@@ -10,7 +10,8 @@ import net.minecraft.text.Text;
 import net.sweetbaboo.floorplacermod.access.ServerPlayerEntityAccess;
 
 public class BlockSelector {
-  public static int selectNextBlock(ServerPlayerEntity player, ServerCommandSource source) {
+
+  public static int selectNextBlock(ServerPlayerEntity player, ServerCommandSource source, boolean shouldIncrement) {
     ServerPlayerEntityAccess playerAccess=(ServerPlayerEntityAccess) player;
     EntityPlayerActionPack actionPack=((ServerPlayerInterface) player).getActionPack();
 
@@ -22,13 +23,13 @@ public class BlockSelector {
       return 0;
     }
 
-    String nextBlockName=blockGenerator.getNextBlockName();
+    String nextBlockName=blockGenerator.getNextBlockName(shouldIncrement);
 
     if (nextBlockName == null) {
       playerAccess.setBuildFloor(false);
       actionPack.stopAll();
       blockGenerator.reset();
-      source.sendFeedback(() -> Text.of(String.format("Finished building %s", blockGenerator.getTileName())), false);
+      source.sendFeedback(() -> Text.of("Finished building"), false);
       return 1;
     }
 

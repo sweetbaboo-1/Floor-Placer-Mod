@@ -1,5 +1,7 @@
 package net.sweetbaboo.floorplacermod.mixin;
 
+import carpet.fakes.ServerPlayerInterface;
+import carpet.helpers.EntityPlayerActionPack;
 import net.sweetbaboo.floorplacermod.access.ServerPlayerEntityAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,6 +29,8 @@ public class CarpetEntityPlayerActionPackMixin {
     ServerPlayerEntityAccess playerAccess = (ServerPlayerEntityAccess) player;
     if (!playerAccess.isBuildingFloor()) return player.interactionManager.interactBlock(player, player.getServerWorld(), stack, hand, blockHit);
 
+    EntityPlayerActionPack actionPack=((ServerPlayerInterface) player).getActionPack();
+
     // we don't support offhand
     Hand mainHand = Hand.MAIN_HAND;
     ItemStack originalStack = player.getStackInHand(mainHand);
@@ -39,9 +43,13 @@ public class CarpetEntityPlayerActionPackMixin {
 
     ActionResult result = player.interactionManager.interactBlock(player, player.getServerWorld(), originalStack, hand, blockHit);
 
-    // only select the next block when once the previous block was placed.
+    // only select the next block once the previous block was placed.
     if (result.isAccepted()) {
-      BlockSelector.selectNextBlock(player, player.getCommandSource());
+      if (BlockSelector.selectNextBlock(player, player.getCommandSource(), true) == 0) {
+        player.getCommandSource().sendError(Text.of("Inventory does not contain " + originalStack));
+        actionPack.stopAll();
+        ((ServerPlayerEntityAccess) player).setBuildFloor(false);
+      }
       return ActionResult.PASS;
     }
     return ActionResult.FAIL;

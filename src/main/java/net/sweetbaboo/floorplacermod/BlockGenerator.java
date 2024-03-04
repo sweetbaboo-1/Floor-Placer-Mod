@@ -21,16 +21,14 @@ public class BlockGenerator {
   private static BlockGenerator instance;
   private int index;
   private List<String> blockOrderList;
-  private String filename;
-  private int tilesX;
-  private int tilesY;
-  private int cols;
-  private int rows;
+  private transient int tilesX;
+  private transient int tilesY;
+  private transient int cols;
+  private transient int rows;
   private transient Schematic tile;
 
   private BlockGenerator() {
     blockOrderList = new ArrayList<>();
-    filename = "";
   }
 
   public static BlockGenerator getInstance() {
@@ -41,13 +39,11 @@ public class BlockGenerator {
   }
 
   public boolean init(String filename, int rowsToBuild, int columnsToBuild, ServerCommandSource source) {
-    this.filename = filename;
-    this.tile = LitematicaLoader.loadLitematicaFile(filename, source);
+    this.tile = LitematicaLoader.loadLitematicaFile(filename + ".litematic", source);
 
     if (this.tile == null) {
       FloorPlacerMod.LOGGER.error("BlockGenerator.init failed to load the schematic %s".formatted(filename));
       source.sendError(Text.of("BlockGenerator.init failed to load the schematic %s".formatted(filename)));
-      this.filename = null;
       return false;
     }
 
@@ -62,12 +58,6 @@ public class BlockGenerator {
   }
 
   public boolean saveState(ServerCommandSource source) {
-
-    if (tile == null) {
-      source.sendFeedback(() -> Text.of("Nothing to save..."), false);
-      return true;
-    }
-
     File directory = SAVE_STATE_PATH.getParentFile();
     if (!directory.exists()) {
       if (!directory.mkdirs()) {
@@ -79,7 +69,7 @@ public class BlockGenerator {
 
     try (FileWriter writer = new FileWriter(SAVE_STATE_PATH)) {
       GSON.toJson(this, writer);
-      source.sendFeedback(() -> Text.of("Saved " + tile.name()), false);
+      source.sendFeedback(() -> Text.of("Saved"), false);
       return true;
     } catch (IOException e) {
       FloorPlacerMod.LOGGER.error("Error serializing BlockGenerator", e);
@@ -98,12 +88,6 @@ public class BlockGenerator {
       BlockGenerator loadedState = GSON.fromJson(reader, BlockGenerator.class);
       this.blockOrderList = loadedState.blockOrderList;
       this.index = loadedState.index;
-      this.filename = loadedState.filename;
-      this.tile = LitematicaLoader.loadLitematicaFile(this.filename, source);
-      this.tilesX = loadedState.tilesX;
-      this.tilesY = loadedState.tilesY;
-      this.cols = loadedState.cols;
-      this.rows = loadedState.rows;
       source.sendFeedback(() -> Text.of("State loaded successfully"), false);
       return true;
     } catch (IOException e) {
@@ -117,14 +101,7 @@ public class BlockGenerator {
     }
   }
 
-  public String getTileName() {
-    if (this.tile == null) {
-      return "null";
-    }
-    return this.tile.name();
-  }
-
-  public String getNextBlockName() {
+  public String getNextBlockName(boolean shouldIncrement) {
     if (blockOrderList == null) {
       return null;
     }
@@ -132,7 +109,9 @@ public class BlockGenerator {
       return null;
     }
     String name = blockOrderList.get(index).substring("minecraft:".length());
-    index++;
+    if (shouldIncrement) {
+      index++;
+    }
     return name;
   }
 
@@ -150,5 +129,13 @@ public class BlockGenerator {
 
   public void reset() {
     instance = null;
+  }
+
+  public boolean setIndex(int index) {
+    if (index > blockOrderList.size() - 1) {
+      return false;
+    }
+    this.index = index;
+    return true;
   }
 }
