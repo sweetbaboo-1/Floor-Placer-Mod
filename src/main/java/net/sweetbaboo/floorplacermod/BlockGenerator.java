@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.sandrohc.schematic4j.schematic.Schematic;
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class BlockGenerator {
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-  private static final File SAVE_STATE_PATH = FabricLoader.getInstance().getConfigDir().resolve("floor-placer-mod/blockGeneratorState.json").toFile();
+  public static final File SAVE_STATE_PATH = FabricLoader.getInstance().getConfigDir().resolve("floor-placer-mod").toFile();
   private static BlockGenerator instance;
   private int index;
   private List<String> blockOrderList;
@@ -58,17 +57,17 @@ public class BlockGenerator {
     return true;
   }
 
-  public boolean saveState(ServerCommandSource source) {
-    File directory = SAVE_STATE_PATH.getParentFile();
-    if (!directory.exists()) {
-      if (!directory.mkdirs()) {
-        FloorPlacerMod.LOGGER.error("Failed to create directory: %s".formatted(directory));
+  public boolean saveState(ServerCommandSource source, String filename) {
+    if (!SAVE_STATE_PATH.exists()) {
+      if (!SAVE_STATE_PATH.mkdirs()) {
+        FloorPlacerMod.LOGGER.error("Failed to create directory: %s".formatted(SAVE_STATE_PATH));
         source.sendFeedback(() -> Text.of("Could not create the directory"), false);
         return false;
       }
     }
 
-    try (FileWriter writer = new FileWriter(SAVE_STATE_PATH)) {
+    // TODO: double check that this is the correct file path.
+    try (FileWriter writer = new FileWriter(SAVE_STATE_PATH + File.separator + filename)) {
       GSON.toJson(this, writer);
       source.sendFeedback(() -> Text.of("Saved"), false);
       return true;
@@ -79,13 +78,13 @@ public class BlockGenerator {
     }
   }
 
-  public boolean loadState(ServerCommandSource source) {
+  public boolean loadState(ServerCommandSource source, String filename) {
     if (!SAVE_STATE_PATH.exists()) {
       source.sendError(Text.of("Nothing to load..."));
       return false;
     }
 
-    try (FileReader reader = new FileReader(SAVE_STATE_PATH)) {
+    try (FileReader reader = new FileReader(SAVE_STATE_PATH + File.separator + filename)) {
       BlockGenerator loadedState = GSON.fromJson(reader, BlockGenerator.class);
       this.blockOrderList = loadedState.blockOrderList;
       this.index = loadedState.index;
@@ -138,6 +137,24 @@ public class BlockGenerator {
       return false;
     }
     this.index = index;
+    return true;
+  }
+
+  public int getIndex() {
+    return index;
+  }
+
+  public boolean deleteBackup(ServerCommandSource source, String fileName) {
+    if (!SAVE_STATE_PATH.exists()) {
+      source.sendError(Text.of("Nothing to load..."));
+      return true;
+    }
+
+    File file = new File(SAVE_STATE_PATH + File.separator + fileName);
+    if (!file.delete()) {
+      source.sendError(Text.of("Failed to delete file"));
+      return false;
+    }
     return true;
   }
 }

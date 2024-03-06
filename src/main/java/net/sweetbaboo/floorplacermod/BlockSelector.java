@@ -23,7 +23,7 @@ public class BlockSelector {
       return 0;
     }
 
-    String nextBlockName=blockGenerator.getNextBlockName(shouldIncrement);
+    String nextBlockName=blockGenerator.getNextBlockName(false);
 
     if (nextBlockName == null) {
       playerAccess.setBuildFloor(false);
@@ -46,6 +46,7 @@ public class BlockSelector {
 
     if (hotbarSlot != -1) {
       player.getInventory().swapSlotWithHotbar(hotbarSlot);
+      blockGenerator.getNextBlockName(shouldIncrement);
       return 1;
     }
     return 0;
