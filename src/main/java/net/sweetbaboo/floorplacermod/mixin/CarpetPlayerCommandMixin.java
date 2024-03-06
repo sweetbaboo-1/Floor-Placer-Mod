@@ -4,7 +4,7 @@ import carpet.commands.PlayerCommand;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.server.command.ServerCommandSource;
-import net.sweetbaboo.floorplacermod.command.BuildFloorCommand;
+import net.sweetbaboo.floorplacermod.commands.BuildFloorCommand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

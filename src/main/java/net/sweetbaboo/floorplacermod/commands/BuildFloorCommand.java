@@ -1,4 +1,4 @@
-package net.sweetbaboo.floorplacermod.command;
+package net.sweetbaboo.floorplacermod.commands;
 
 import carpet.fakes.ServerPlayerInterface;
 import carpet.helpers.EntityPlayerActionPack;
@@ -21,6 +21,7 @@ import net.sweetbaboo.floorplacermod.BlockSelector;
 import net.sweetbaboo.floorplacermod.FloorPlacerMod;
 import net.sweetbaboo.floorplacermod.SyncmaticaConfigAccess;
 import net.sweetbaboo.floorplacermod.access.ServerPlayerEntityAccess;
+import net.sweetbaboo.floorplacermod.commands.backup.BackupCommand;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -46,10 +47,7 @@ public class BuildFloorCommand {
                 .then(argument("width", IntegerArgumentType.integer(1))
                     .then(argument("length", IntegerArgumentType.integer(1))
                         .executes(BuildFloorCommand::loadSchematic)))))
-        .then(literal("save")
-            .executes(BuildFloorCommand::saveState))
-        .then(literal("load")
-            .executes(BuildFloorCommand::loadState))
+        .then(BackupCommand.register())
         .then(literal("abort")
             .executes(BuildFloorCommand::stop))
         .then(literal("selectNextBlock")
@@ -57,6 +55,14 @@ public class BuildFloorCommand {
         .then(literal("setIndex")
             .then(argument("index", IntegerArgumentType.integer(0)))
                 .executes(BuildFloorCommand::setIndex));
+  }
+
+  private static int listBackups(CommandContext<ServerCommandSource> serverCommandSourceCommandContext) {
+    return 0;
+  }
+
+  private static int startBackup(CommandContext<ServerCommandSource> serverCommandSourceCommandContext) {
+    return 0;
   }
 
   private static int setIndex(CommandContext<ServerCommandSource> context) {
@@ -84,7 +90,7 @@ public class BuildFloorCommand {
   }
 
   private static Map<String, String> getSchematics() {
-    File conf =SyncmaticaConfigAccess.getPlacementsConfig();
+    File conf = SyncmaticaConfigAccess.getPlacementsConfig();
     if (conf == null || !conf.exists() || !conf.canRead())
       return Collections.emptyMap();
     try (FileReader reader = new FileReader(conf)) {
@@ -105,22 +111,6 @@ public class BuildFloorCommand {
       syncmaticaPlacements = Collections.emptyMap();
       return Collections.emptyMap();
     }
-  }
-
-  private static int saveState(CommandContext<ServerCommandSource> context) {
-    ServerPlayerEntity player = getContextPlayer(context);
-    if (player == null) return -1;
-    BlockGenerator blockGenerator = BlockGenerator.getInstance();
-    return blockGenerator.saveState(context.getSource()) ? 1 : 0;
-  }
-
-  private static int loadState(CommandContext<ServerCommandSource> context) {
-    ServerPlayerEntity player = getContextPlayer(context);
-    if (player == null) return -1;
-
-    ((ServerPlayerEntityAccess) player).setBuildFloor(true);
-    BlockGenerator blockGenerator = BlockGenerator.getInstance();
-    return blockGenerator.loadState(context.getSource()) ? 1 : 0;
   }
 
   private static int stop(CommandContext<ServerCommandSource> context) {
