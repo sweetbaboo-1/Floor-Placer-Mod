@@ -39,9 +39,6 @@ Floor-Placer-Mod is an extension mod for CarpetMod designed to automate the proc
 ## Known Issues
 1. Because the mod doesn't change the orientation of the blocks (they're all placed with the same orientation) blocks that require specific orientation are not compatible. 
 
-## TODO
-1. Fix BlockGenerator so that multiple builds can happen in parallel
-
 ## Contributing
 Contributions to Floor-Placer-Mod are welcome! If you encounter any bugs or have suggestions for improvements, please open an issue on the GitHub repository.
 
