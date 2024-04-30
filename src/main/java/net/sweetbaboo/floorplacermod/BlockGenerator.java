@@ -66,7 +66,6 @@ public class BlockGenerator {
       }
     }
 
-    // TODO: double check that this is the correct file path.
     try (FileWriter writer = new FileWriter(SAVE_STATE_PATH + File.separator + filename)) {
       GSON.toJson(this, writer);
       source.sendFeedback(() -> Text.of("Saved"), false);
