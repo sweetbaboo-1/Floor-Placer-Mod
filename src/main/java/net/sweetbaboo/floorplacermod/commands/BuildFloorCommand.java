@@ -57,14 +57,6 @@ public class BuildFloorCommand {
                 .executes(BuildFloorCommand::setIndex));
   }
 
-  private static int listBackups(CommandContext<ServerCommandSource> serverCommandSourceCommandContext) {
-    return 0;
-  }
-
-  private static int startBackup(CommandContext<ServerCommandSource> serverCommandSourceCommandContext) {
-    return 0;
-  }
-
   private static int setIndex(CommandContext<ServerCommandSource> context) {
     BlockGenerator blockGenerator = BlockGenerator.getInstance();
     if (blockGenerator == null) {

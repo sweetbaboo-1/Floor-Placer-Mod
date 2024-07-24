@@ -57,31 +57,28 @@ public class BlockGenerator {
     return true;
   }
 
-  public boolean saveState(ServerCommandSource source, String filename) {
+  public void saveState(ServerCommandSource source, String filename) {
     if (!SAVE_STATE_PATH.exists()) {
       if (!SAVE_STATE_PATH.mkdirs()) {
         FloorPlacerMod.LOGGER.error("Failed to create directory: %s".formatted(SAVE_STATE_PATH));
         source.sendFeedback(() -> Text.of("Could not create the directory"), false);
-        return false;
+        return;
       }
     }
 
-    // TODO: double check that this is the correct file path.
     try (FileWriter writer = new FileWriter(SAVE_STATE_PATH + File.separator + filename)) {
       GSON.toJson(this, writer);
       source.sendFeedback(() -> Text.of("Saved"), false);
-      return true;
     } catch (IOException e) {
       FloorPlacerMod.LOGGER.error("Error serializing BlockGenerator", e);
       source.sendError(Text.of("Error serializing BlockGenerator"));
-      return false;
     }
   }
 
-  public boolean loadState(ServerCommandSource source, String filename) {
+  public void loadState(ServerCommandSource source, String filename) {
     if (!SAVE_STATE_PATH.exists()) {
       source.sendError(Text.of("Nothing to load..."));
-      return false;
+      return;
     }
 
     try (FileReader reader = new FileReader(SAVE_STATE_PATH + File.separator + filename)) {
@@ -90,15 +87,12 @@ public class BlockGenerator {
       this.index = loadedState.index;
       BlockSelector.selectNextBlock(source.getPlayer(), source, false);
       source.sendFeedback(() -> Text.of("State loaded successfully"), false);
-      return true;
     } catch (IOException e) {
       FloorPlacerMod.LOGGER.error("Error loading save state", e);
       source.sendError(Text.of("Error loading save state"));
-      return false;
     } catch (JsonSyntaxException e) {
       FloorPlacerMod.LOGGER.error("Error parsing JSON", e);
       source.sendError(Text.of("Error parsing JSON"));
-      return false;
     }
   }
 
