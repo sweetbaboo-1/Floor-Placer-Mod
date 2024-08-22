@@ -86,6 +86,7 @@ public class BlockGenerator {
       this.blockOrderList = loadedState.blockOrderList;
       this.index = loadedState.index;
       BlockSelector.selectNextBlock(source.getPlayer(), source, false);
+      source.sendFeedback(() -> Text.of("Correct block selected"), false);
       source.sendFeedback(() -> Text.of("State loaded successfully"), false);
     } catch (IOException e) {
       FloorPlacerMod.LOGGER.error("Error loading save state", e);

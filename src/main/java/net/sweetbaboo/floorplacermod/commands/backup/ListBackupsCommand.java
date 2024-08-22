@@ -15,7 +15,7 @@ public class ListBackupsCommand {
               var backups = RestoreHelper.getAvailableBackups(ctx.getSource().getServer());
 
               if(backups.size() == 0) {
-                builder.append("There a no backups available.");
+                builder.append("There are no backups available.");
               } else if(backups.size() == 1) {
                 builder.append("There is only one backup available: ");
                 builder.append(backups.get(0));

@@ -53,8 +53,8 @@ public class BuildFloorCommand {
         .then(literal("selectNextBlock")
             .executes(BuildFloorCommand::selectNextBlock))
         .then(literal("setIndex")
-            .then(argument("index", IntegerArgumentType.integer(0)))
-                .executes(BuildFloorCommand::setIndex));
+            .then(argument("index", IntegerArgumentType.integer(0))
+                .executes(BuildFloorCommand::setIndex)));
   }
 
   private static int setIndex(CommandContext<ServerCommandSource> context) {
